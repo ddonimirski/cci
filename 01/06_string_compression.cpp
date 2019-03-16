@@ -47,6 +47,28 @@ struct array final
     }
 };
 
+//assumption arr has proper size
+int atoi(char* arr, int val)
+{
+    char tmp[MAX_STR];
+
+    int i = 0;
+    while (val != 0)
+    {
+        auto const r = val % 10;
+        tmp[i++] = r + '0';
+        val /= 10;
+    }
+
+    int d = 0;
+    while (i--)
+    {
+        arr[d++] = tmp[i];
+    }
+
+    return d;
+}
+
 void compress(char* const arr)
 {
     auto const l = len(arr);
@@ -61,9 +83,9 @@ void compress(char* const arr)
     {
         if (tmp[ci] != arr[i])
         {
-            tmp[++ci] = c + '0';
+            ci += atoi(&tmp[++ci], c);
+            tmp[ci] = arr[i];
             c = 1;
-            tmp[++ci] = arr[i];
         }
         else
         {
@@ -71,7 +93,7 @@ void compress(char* const arr)
         }
     }
 
-    tmp[++ci] = c + '0';
+    ci += atoi(&tmp[++ci], c);
     ++ci;
 
     if (ci < l)
