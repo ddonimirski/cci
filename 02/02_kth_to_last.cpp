@@ -1,3 +1,4 @@
+//g++ -std=c++17 -Wall -Wextra -pedantic -pipe -O2 [-DBEGIN] [-DITER]
 #include <iostream>
 
 using std::cout, std::cin, std::endl;
@@ -44,28 +45,97 @@ std::ostream& operator<< (std::ostream& os, Node<T> const* head)
     return os;
 }
 
+#if defined BEGIN
+
+#if defined ITER
+template<class T>
+Node<T>* get_kth_to_last(Node<T>* head, int k)
+{
+    if (head)
+    {
+        Node<T>* end = head;
+
+        while (k--)
+        {
+            if (!end)
+                return nullptr;
+
+            end = end->next;
+        }
+
+        while(end)
+        {
+            end = end->next;
+            head = head->next;
+        }
+    }
+
+    return head;
+}
+#else
 template<class T>
 Node<T>* get_kth_to_last(Node<T>* head, int& k)
 {
-    if (!head)
+    if (head)
     {
-        return head;
+        Node<T>* const ret = get_kth_to_last(head->next, k);
+        --k;
+        if (k < 0 && ret)
+        {
+            return ret;
+        }
+        else if (k > 0)
+        {
+            return nullptr;
+        }
     }
 
-    auto* ret = get_kth_to_last(head->next, k);
-    --k;
-    if (!k)
-    {
-        return ret;
-    }
     return head;
 }
+#endif
+
+#else
+
+#if defined ITER
+template<class T>
+Node<T>* get_kth_to_last(Node<T>* head, int k)
+{
+    if (head)
+    {
+        for (int i = 1; i < k; ++i)
+        {
+            head = head->next;
+        }
+    }
+
+    return head;
+}
+#else
+template<class T>
+Node<T>* get_kth_to_last(Node<T>* head, int k)
+{
+    if (head && k>1)
+    {
+        return get_kth_to_last(head->next, k-1);
+    }
+
+    return head;
+}
+#endif
+
+#endif
 
 int main()
 {
     std::ios_base::sync_with_stdio(false);
     int K;
     cin >> K;
+
+    if (K <= 0)
+    {
+        cout << "k - must be greater then zero\n";
+        return 0;
+    }
 
     int v;
 
@@ -76,8 +146,14 @@ int main()
         head = append(head, v);
     }
 
-    head = get_kth_to_last(head, K);
-
-    cout << head << endl;
-
+    cout << K << ' ' << head << endl;
+    if (auto* node = get_kth_to_last(head, K))
+    {
+        cout << node->data << endl;
+    }
+    else
+    {
+        cout << "not found" << endl;
+    }
+    return 0;
 }
