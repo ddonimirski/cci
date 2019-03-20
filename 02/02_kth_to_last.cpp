@@ -3,17 +3,6 @@
 
 using std::cout, std::cin, std::endl;
 
-struct pr_bool
-{
-    bool const __bool;
-
-    friend std::ostream& operator << (std::ostream& os, pr_bool const& v)
-    {
-        return os << (v.__bool?"true":"false");
-    }
-};
-
-
 template<class T>
 struct Node
 {
