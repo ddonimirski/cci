@@ -35,6 +35,13 @@ std::ostream& operator<< (std::ostream& os, Node<T> const* head)
 }
 
 template<class T>
+bool delete_next(Node<T>* node)
+{
+    if (!node || node->next)
+        return false;
+}
+
+template<class T>
 Node<T>* delete_middle_node(Node<T>* head)
 {
     Node<T>* slow = head;
