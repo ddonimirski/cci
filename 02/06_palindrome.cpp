@@ -75,14 +75,78 @@ struct pr_bool
 };
 
 
-#if defined REC
-node_t* is_palindrome(node_t* head)
-{
-}
-#else
-// destory list
+#if defined REVERSE
 bool is_palindrome(node_t* head)
 {
+    node_t* keep_head = head;
+    node_t* rev = nullptr;
+    
+    while (head)
+    {
+        rev = append(rev, head->data);
+        head = head->next;
+    }
+
+    while (keep_head && rev)
+    {
+        if (keep_head->data != rev->data)
+        {
+            return false;
+        }
+
+        keep_head = keep_head->next;
+        rev = rev->next;
+    }
+
+    return true;
+}
+#elif defined RECURSIVE
+
+struct ret
+{
+    node_t* node;
+    bool result;
+};
+
+ret* rec(node_t* head, node_t* fast)
+{
+   if (fast) 
+   {
+       if (fast->next)
+       {
+           auto* ret = rec(head->next, fast->next->next);
+           ret->result = ret->result && ret->node->data == head->data;
+           ret->node = ret->node->next;
+           return ret;
+       }
+
+       return new ret{head->next, true};
+   }
+
+   return new ret{head, true};
+}
+
+bool is_palindrome(node_t* head)
+{
+    ret* r = rec(head, head);
+    auto const tmp_r = r->result;
+    delete r;
+    return tmp_r;
+}
+
+#elif defined STACK
+
+bool is_palindrome(node_t* head)
+{
+#error NOT IMPLEMNTED
+    return false;
+}
+
+#else
+bool is_palindrome(node_t* head)
+{
+// copy list if you want keep it save :P
+//
     if (!head)
         return false;
 
