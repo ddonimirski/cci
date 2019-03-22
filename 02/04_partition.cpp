@@ -1,24 +1,7 @@
 // g++ -std=c++17 -Wall -Wextra -pedantic -pipe -O2 04_partition.cpp 
-// && echo 1 
 #include <iostream>
 
 using std::cout, std::cin, std::endl;
-
-struct pr_bool_msg
-{
-    bool const _val;
-    char const *const _true;
-    char const *const _false;
-
-    pr_bool_msg(bool v, char const* t = "true", char const* f = "false")
-        :_val(v), _true(t), _false(f)
-        {}
-
-    friend std::ostream& operator << (std::ostream& os, pr_bool_msg const& v)
-    {
-        return os << (v._val ? v._true, v._false);
-    }
-};
 
 template<class T>
 struct Node
@@ -31,7 +14,7 @@ struct Node
 };
 
 template<class T>
-Node<T>* append_new(Node<T>* head, T const& v)
+Node<T>* append(Node<T>* head, T const& v)
 {
     auto* new_head = new Node<T>{v};
 
@@ -41,15 +24,78 @@ Node<T>* append_new(Node<T>* head, T const& v)
 }
 
 template<class T>
+std::ostream& operator<< (std::ostream& os, Node<T> const* head)
 {
+    while(head)
+    {
+        os << head->data << ' ';
+        head = head->next;
+    }
+    return os;
 }
 
+template<class T>
+Node<T>* append_nodes(Node<T>* head, Node<T>* next)
+{
+    if (!next)
+        return head;
+
+    next->next = head;
+    return next;
+}
+
+template<class T>
+Node<T>* partition(Node<T>* head, T const& v)
+{
+    Node<T>* gt = nullptr;
+    Node<T>* g = nullptr;
+    Node<T>* lt = nullptr;
+    Node<T>* l = nullptr;
+
+    while (head)
+    {
+        Node<T>* tmp = head;
+        head = head->next;
+        if (tmp->data >= v)
+        {
+            g = append_nodes(g, tmp);
+            if (!gt)
+            {
+                gt = g;
+            }
+        }
+        else
+        {
+            l = append_nodes(l, tmp);
+            if (!lt)
+            {
+                lt = l;
+            }
+        }
+    }
+
+    if (gt)
+    {
+        gt->next = l;
+        return g;
+    }
+    else if (lt)
+    {
+        lt->next = g;
+        return l;
+    }
+
+    return nullptr;
+}
 
 int main()
 {
     std::ios_base::sync_with_stdio(false);
 
     Node<int>* head = nullptr;
+
+    int p;
+    cin >> p;
 
     int v;
     while(cin >> v)
@@ -58,7 +104,7 @@ int main()
     }
     cout << head << endl;
 
-    if ((head = delete_middle_node(head)))
+    if ((head = partition(head, p)))
     {
         cout << head << endl;
     }
