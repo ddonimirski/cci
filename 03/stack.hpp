@@ -56,6 +56,10 @@ class stack
         return get_top(__cont);
     }
 
+    T const& top() const
+    {
+        return const_cast<stack*>(this)->top();
+    }
 };
 
 #endif //STACK__HPP
