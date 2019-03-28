@@ -5,26 +5,51 @@ struct empty_stack_excpetion
 {
 };
 
-#include "../02/list.hpp"
-
-template<class T, template<typename> class CONT>
-static inline T& get_top(CONT<T>& cont)
+struct full_stack_exception
 {
-    return cont.tail();
-}
+};
 
 
-template<class T>
-static inline T& get_top(list<T>& cont)
+template<class T, class CONT>
+struct stack_policy
 {
-    return cont.head();
-}
+    using cont_t = CONT;
+
+    static void add(cont_t& cont, T const& v)
+    {
+        cont.add(v);
+    }
 
 
-template<class T, class CONT=list<T>>
+    static void remove(cont_t& cont)
+    {
+        cont.remove();
+    }
+
+
+    static T& top(cont_t& cont)
+    {
+        return cont.top();
+    }
+
+
+    static bool empty(cont_t const & cont)
+    {
+        return cont.empty();
+    }
+
+
+    static bool full(cont_t const& cont)
+    {
+        return cont.full();
+    }
+};
+
+
+template<class T, class ADAPT>
 class stack
 {
-    CONT __cont;
+    typename ADAPT::cont_t __cont;
 
     public:
 
@@ -32,33 +57,47 @@ class stack
 
     void push(T const& v)
     {
-        __cont.add(v);
+        ADAPT::add(__cont, v);
     }
 
     void pop()
     {
-        if (__cont.empty())
-            throw empty_stack_excpetion{};
-        __cont.remove();
+        if_empty_throw();
+        ADAPT::remove(__cont);
     }
 
     bool empty() const
     {
-        return __cont.empty();
+        return ADAPT::empty(__cont);
+    }
+
+    void if_empty_throw() const
+    {
+        if (empty())
+            throw empty_stack_excpetion{};
+    }
+
+    bool full() const
+    {
+        return ADAPT::full(__cont);
+    }
+
+    void if_full_throw() const
+    {
+        if(full())
+            throw full_stack_exception{};
     }
 
 
     T& top()
     {
-        if (__cont.empty())
-            throw empty_stack_excpetion{};
-
-        return get_top(__cont);
+        if_empty_throw();
+        return ADAPT::top(__cont);
     }
 
     T const& top() const
     {
-        return const_cast<stack*>(this)->top();
+        return ADAPT::top(__cont);
     }
 };
 

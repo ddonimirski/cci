@@ -203,6 +203,11 @@ class list
         return __head == nullptr;
     }
 
+    bool full() const
+    {
+        return false;
+    }
+
     size_t size() const
     {
         return __size;

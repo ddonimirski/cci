@@ -59,6 +59,11 @@ class vector
         return __size == 0;
     }
 
+    bool full() const
+    {
+        return false;
+    }
+
     T& head()
     {
         if (empty())
