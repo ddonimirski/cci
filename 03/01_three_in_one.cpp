@@ -12,11 +12,8 @@ int adjustIndex(int index, int maxvalue)
     return ((index % maxvalue) + maxvalue) % maxvalue;
 }
 
-
 template<int N>
 struct MultiStack {
-
-
 
     struct StackInfo {
         int max_index;
@@ -124,13 +121,12 @@ struct MultiStack {
 
     void shift(int stackNum)
     {
-        cout << "shift " << stackNum << endl;
         StackInfo& stack = info[stackNum];
 
         if (stack.size >= stack.capacity)
         {
             int nextStack = (stackNum + 1) % info.size();
-            //shift(nextStack);
+            shift(nextStack);
             stack.capacity++;
         }
 
