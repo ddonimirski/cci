@@ -77,6 +77,27 @@ void sort_stack(stack_t& s)
     copy_stack(out, s);
 }
 
+void sort_stack2(stack_t& s)
+{
+    stack_t out;
+
+    while (!s.empty())
+    {
+        auto tmp = s.top();
+        s.pop();
+
+        while(!out.empty() && out.top() < tmp)
+        {
+            s.push(out.top());
+            out.pop();
+        }
+
+        out.push(tmp);
+    }
+
+    copy_stack(out, s);
+}
+
 int main()
 {
     std::vector<base_t> arr = {1, 4, 2, 5, 6, 7, 8, 9, 4, 3, 6, 7, 8, 3, 3, 5, 7, 8, 4, 6};
@@ -90,7 +111,7 @@ int main()
         s.push(v);
     }
 
-    sort_stack(s);
+    sort_stack2(s);
 
     cout << s << endl; 
 
