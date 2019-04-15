@@ -1,5 +1,6 @@
 #if !defined STACK__HPP
 #define STACK__HPP
+#include <iostream>
 
 struct empty_stack_excpetion
 {
@@ -42,6 +43,11 @@ struct stack_policy
     static bool full(cont_t const& cont)
     {
         return cont.full();
+    }
+
+    static size_t size(cont_t const& cont)
+    {
+        return cont.size();
     }
 };
 
@@ -98,6 +104,23 @@ class stack
     T const& top() const
     {
         return ADAPT::top(__cont);
+    }
+
+    size_t size() const
+    {
+        return ADAPT::size(__cont);
+    }
+
+    friend std::ostream& operator << (std::ostream& os, stack const& s)
+    {
+        if (!s.empty())
+            for (auto const v: s.__cont)
+            {
+                os << v << ' ';
+            }
+        else
+            os << "empty stack";
+        return os;
     }
 };
 

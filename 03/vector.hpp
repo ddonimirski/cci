@@ -11,36 +11,36 @@ class vector
 {
     T* __arr;
     size_t __size;
-    size_t __capasicty;
+    size_t __capacity;
 
     static constexpr size_t DEFAULT_CPACITY = 4;
 
     void __inc()
     {
-        auto const s_tmp = __capasicty * 2;
+        auto const s_tmp = __capacity * 2;
         T* tmp =  new T[s_tmp];
 
         // copy current
-        for (auto i = 0ull; i < __capasicty; ++i)
+        for (auto i = 0ull; i < __capacity; ++i)
         {
             tmp[i] = __arr[i];
         }
 
         delete [] __arr;
         __arr = tmp;
-        __capasicty = s_tmp;
+        __capacity = s_tmp;
     }
 
     public:
 
     vector():__arr(new T[DEFAULT_CPACITY]), __size(0),
-            __capasicty(DEFAULT_CPACITY) { }
+            __capacity(DEFAULT_CPACITY) { }
 
     ~vector() { delete [] __arr; }
 
     void add(T const& v)
     {
-        if (__capasicty == __size)
+        if (__capacity == __size)
         {
             __inc();
         }
@@ -64,6 +64,16 @@ class vector
         return false;
     }
 
+    size_t size() const
+    {
+        return __size;
+    }
+
+    size_t capacity() const
+    {
+        return __capacity;
+    }
+
     T& head()
     {
         if (empty())
@@ -81,6 +91,16 @@ class vector
     T& operator[](int id)
     {
         return __arr[id];
+    }
+
+    T* begin() const
+    {
+        return &__arr[0];
+    }
+
+    T* end() const
+    {
+        return &__arr[__size];
     }
 };
 
