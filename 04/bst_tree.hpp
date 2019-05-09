@@ -19,32 +19,44 @@ struct node_tree
     T value;
     std::unique_ptr<node_tree> left; 
     std::unique_ptr<node_tree> right;
+    node_tree* parent;
 
     node_tree()
-        : value{T{}}
+        : value{T{}},
+        parent{nullptr}
     { }
 
     node_tree(node_tree&& n)
         : value{n.value},
             left{std::move(n.left)},
-            right{std::move(n.right)}
+            right{std::move(n.right)},
+            parent{n.parent}
     { }
 
-    node_tree(node_tree const& n) = default;
+    node_tree(node_tree const& n) = delete;
 
 
-    explicit node_tree(T&& v)
-        : value{v}
+    explicit node_tree(T&& v, node_tree* p = nullptr)
+        : value{v},
+        parent{p}
     { }
 
-    explicit node_tree(T const& v)
-        : value{v}
+    explicit node_tree(T const& v, node_tree* p = nullptr)
+        : value{v},
+        parent{p}
     { }
 
     friend std::ostream& operator<<(std::ostream& os, node_tree const& n)
     {
         if (n.left) os << *n.left;
-        os << n.value << ' ';
+
+        os << n.value << '(';
+        if (n.parent)
+        {
+            os << n.parent->value;
+        }
+        os  << ')' << ' ';
+
         if (n.right) os << *n.right;
         return os;
     }
@@ -84,29 +96,43 @@ struct bst_tree
     using node_tree_t = node_tree<T>;
     using node_tree_ptr_t = std::unique_ptr<node_tree_t>;
     node_tree_ptr_t root;
+    size_t _size;
 
-    bst_tree() { }
+    size_t size() const { return _size; }
+
+    bst_tree(): _size{0u} { }
 
     bst_tree(bst_tree&& bst)
-        : root{std::move(bst.root)}
+        : _size{bst._size}, root{std::move(bst.root)}
     { }
 
-    bst_tree(bst_tree const& ) = delete;
+    bst_tree(bst_tree const& ) = delete; //TODO: implement
+
 
     void add(T const& v)
     {
         if (!root)
+        {
             root.reset(new node_tree_t{v});
+            ++_size;
+        }
         else
+        {
             add(new node_tree_t{v}, root);
+        }
     }
 
     void add(T&& v)
     {
         if (!root)
+        {
             root.reset(new node_tree_t{std::forward<node_tree_t>(v)});
+            ++_size;
+        }
         else
+        {
             add(new node_tree_t{std::forward<node_tree_t>(v)}, root);
+        }
     }
 
     void add(node_tree_t* v, node_tree_ptr_t& p)
@@ -117,7 +143,9 @@ struct bst_tree
         }
         else
         {
+            v->parent = p.get();
             n.reset(v);
+            ++_size;
         }
     }
 
@@ -125,7 +153,6 @@ struct bst_tree
     {
         if (root)
         {
-            //std::cout << "root (" << root.value << ")";
             root->pr();
         }
         else
